@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <style>
+            html,body{
+                font-family: Lucida, Arial, Helvetica, sans-serif;
+                letter-spacing: -0.05em;
+                margin:0;
+                padding:0;
+                height:100%;
+            }
+            #background{
+                position:fixed;
+                background-size:cover;
+                filter:blur(3px);
+                height:100%;
+                width:100%;
+                background-image:url('static/backgrounds/circles.jpg');
+                z-index: -1;
+            }
+            #container{
+                margin-left: 25%;
+                margin-right: 25%;
+                padding: 30px;
+                backdrop-filter: blur(20px);
+                background-color:rgba(48, 100, 107, 0.5);
+                position:relative;
+                top:30%;
+                color:white;
+            }
+            @media only screen and (max-width: 600px){
+                #container{
+                    margin:20px;
+                    padding:10px;
+                }
+            }
+            h1{
+                font-size:30pt;
+                font-weight:lighter;
+                letter-spacing: -0.1em;
+            }
+            fieldset{
+                border: 1px solid white;
+                text-align: center;
+            }
+            input[type='text']{
+                padding:10px;
+                font-size:20pt;
+                display: inline-block;
+                border:none;
+                width:calc(100% - 20px);
+            }
+            input[type='submit']{
+                background-color:rgb(160, 255, 82);
+                box-shadow:0px 0px 5px grey;
+                border:none;
+                padding:10px;
+                width:100%;
+            }
+        </style>
+        <div id=background></div>
+        <div id=container>
+        <h1>NOTUNO!</h1>
+            <form method=post>
+                <fieldset>
+                    <legend>Enter your username</legend>
+                    <input type='text' placeholder='username' name=name>
+                    <br><br>
+                    <input type='submit' value = "Let's go!">
+                </fieldset>
+            </form>
+        </div>
+    </body>
+</html>

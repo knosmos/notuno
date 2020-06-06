@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Notuno</title>
+    </head>
+    <body>
+        <style>
+            html,body{
+                margin:0;
+                height:100%;
+                font-family: Lucida, Arial, Helvetica, sans-serif;
+                letter-spacing: -0.05em;
+            }
+            #background{
+                position:fixed;
+                background-size:cover;
+                filter:blur(3px);
+                height:100%;
+                width:100%;
+                z-index: -1;
+            }
+            #header{
+                height:10%;
+                backdrop-filter:blur(10px);
+                background:rgba(0,0,0,0.3);
+                color:white;
+            }
+            #top{
+                /*display:grid;
+                grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+                text-align:center;
+                justify-items: center;*/
+                text-align: center;
+                height:50%;
+                overflow:auto;
+            }
+            #top img{
+                height:80%
+            }
+            /*#draw-button{
+                border-radius:30px;
+                background-color:white;
+                filter: drop-shadow(0px 0px 5px black);
+                margin:20px;
+                display: inline-block;
+            }
+            #draw-button:hover{
+                border:2px dotted blue;
+                background-color:aliceblue;
+            }
+            #draw-button h1{
+                position:relative;
+                top:45%;
+                margin:0;
+            }*/
+            img{
+                filter: drop-shadow(6px 6px 1px black);
+                display:inline-block;
+                object-fit: cover;
+                padding:20px;
+            }
+            img:hover{
+                filter: drop-shadow(10px 10px 1px black);
+                position:relative;
+                right:4px;
+                bottom:4px;
+                cursor:pointer;
+            }
+            #hand{
+                display:grid;
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                justify-items: center;
+                justify-content: center;
+                background-color:rgba(100,100,100,0.3);
+                backdrop-filter: blur(10px);
+                height:40%;
+                overflow:auto;
+                place-items:center stretch;
+                gap: 20px 20px;
+                padding-left:20px;
+            }
+            #hand img{
+                width:95%;
+            }
+        </style>
+        <div id=background></div>
+        <div id=header></div>
+        <div id=top>
+            <image src='static/cards3/uno.png' onclick='addCard();'></image>
+            <image id='topCard' onclick='advanceTurn();'></image>
+        </div>
+        <div id='hand'>
+        </div>
+        <script>
+            group = {{ group }};
+            let id = "{{ id }}";
+            let name = `{{ name | safe }}`;
+            let groupUsers = JSON.parse(getInfo(`_getgroupusers?group=${group}`));
+
+            let moveNum = 0;
+            let turn = Infinity;
+
+            // Set random background
+            background_images = ['circles.jpg','lines.jpg','dashes.png','triangles.jpg','abstract.png'];
+            document.getElementById('background').style.backgroundImage = 'url(static/backgrounds/'+background_images[Math.floor(Math.random()*(background_images.length-1))]+')';
+            
+            // Send AJAX call
+            function getInfo(address){
+                let xhttp = new XMLHttpRequest();
+                let resp;
+                xhttp.onreadystatechange = function() {
+                    if (this.readyState == 4 && this.status == 200) {
+                        resp = this.responseText;
+                    }
+                };
+                xhttp.open("GET", address, false);
+                xhttp.send();
+                return resp;
+            }
+
+            // Get the current top card.
+            function getTopCard(){
+                card = JSON.parse(getInfo(`_currentcard?group=${group}`));
+                document.getElementById('topCard').src=`static/cards/${card[0]}/${card[1]}.png`;
+            }
+
+            // Play cards on click.
+            function playCard(color,num){
+                if(turn === groupUsers.indexOf(name)){
+                    res = getInfo(`_playcard?color=${color}&num=${num}&group=${group}&id=${id}&move=${moveNum}`);
+                    if(res!='invalid'){
+                        updateCards();
+                        getTopCard();
+                        moveNum += 1;
+                    }
+                    else{
+                        alert('Invalid card!');
+                    }
+                }
+            }
+
+            // Add a card to the player's hand
+            function addCard(){
+                if(turn === groupUsers.indexOf(name)){
+                    getInfo(`_addcard?group=${group}&id=${id}`);
+                    updateCards();
+                    advanceTurn();
+                    return 'valid';
+                }
+                return 'invalid';
+            }
+
+            // Update the cards in the player's hand
+            function updateCards(){
+                cards = JSON.parse(getInfo(`_usercards?id=${id}&group=${group}`));
+                cardDiv = document.getElementById('hand');
+                cardDiv.innerHTML = '';
+                for(let card of cards){
+                    cardDiv.innerHTML += `<image src='static/cards/${card[0]}/${card[1]}.png' onclick = "playCard('${card[0]}','${card[1]}')" class = "handcard"></image>`
+                }
+            }
+
+            // Get the number of cards that each player has
+            //function getCardStatuses(){
+            //    if(getInfo(`_didsomeonewin?group=${group}`)==='yes'){
+            //        location.href='/end';
+            //    }
+            //}
+
+            function didSomeoneWin(){
+                if(getInfo(`_didsomeonewin?group=${group}`)==='yes'){
+                    location.href='/end';
+                }
+            }
+
+            // Move to the next player.
+            function advanceTurn(){
+                if(turn === groupUsers.indexOf(name)){
+                    getInfo(`_advanceturn?group=${group}`)
+                    return 'valid';
+                }
+                return 'invalid';
+            }
+
+            // Whose turn is it?
+            function whoseTurnIsIt(){
+                let prevTurn = turn;
+                turn = parseInt(getInfo(`_whoseturnisit?group=${group}`));
+                if(turn != prevTurn){
+                    if(turn === groupUsers.indexOf(name)){
+                        moveNum = 0;
+                        for(let i of document.getElementsByClassName('handcard')){
+                            i.style.webkitFilter = 'grayscale(0%) drop-shadow(6px 6px 1px black)';
+                        }
+                    }
+                    else{
+                        for(let i of document.getElementsByClassName('handcard')){
+                            i.style.webkitFilter = 'grayscale(100%) drop-shadow(6px 6px 1px black)';
+                        }
+                    }
+                }
+            }
+
+            updateCards(); // Player's cards don't need to be constantly updated
+            setInterval(whoseTurnIsIt,500);
+            //setInterval(getCardStatuses,1000);
+            setInterval(getTopCard,500);
+            setInterval(didSomeoneWin,1000);
+            document.getElementById('header').innerHTML=`${name}`;
+        </script>
+    </body>
+</html>

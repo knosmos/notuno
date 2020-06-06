@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <style>
+            html,body{
+                font-family: Lucida, Arial, Helvetica, sans-serif;
+                letter-spacing: -0.05em;
+                margin:0;
+                padding:0;
+                height:100%;
+            }
+            #background{
+                position:fixed;
+                background-size:cover;
+                height:100%;
+                width:100%;
+                background-image:url('static/backgrounds/lines.jpg');
+                z-index: -1;
+            }
+            #container{
+                margin-left: 25%;
+                margin-right: 25%;
+                padding: 30px;
+                backdrop-filter: blur(20px);
+                background-color:rgba(48, 100, 107, 0.5);
+                position:relative;
+                color:white;
+            }
+            @media only screen and (max-width: 600px){
+                #container{
+                    margin:20px;
+                    padding:10px;
+                }
+            }
+            h1{
+                font-size:30pt;
+                font-weight:lighter;
+                letter-spacing: -0.1em;
+            }
+            input[type='submit']{
+                background-color:rgb(160, 255, 82);
+                box-shadow:0px 0px 5px grey;
+                border:none;
+                padding:10px;
+                width:100%;
+            }
+        </style>
+        <div id='background'></div>
+        <div id='container'>
+            <h1>Who's in?</h1>
+            <form method=post>
+                <input type=submit value="Start!">
+            </form>
+            <ul id='users'>
+            </ul>
+        </div>
+        <script>
+            function make_pretty(a){
+                let res = '';
+                let text = JSON.parse(a);
+                for(let i of text){
+                    res += `<li>${i}</li>`;
+                }
+                return res
+            }
+            function refresh() {
+                let xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {
+                    if (this.readyState == 4 && this.status == 200) {
+                        document.getElementById('users').innerHTML = make_pretty(this.responseText);
+                    }
+                };
+                xhttp.open("GET", "_refreshusers", true);
+                xhttp.send();
+
+                let xhttp2 = new XMLHttpRequest();
+                xhttp2.onreadystatechange = function() {
+                    if (this.readyState == 4 && this.status == 200) {
+                        if (this.responseText === 'yes'){
+                            location.href='/';
+                        }
+                    }
+                };
+                xhttp2.open("GET", "_started", true);
+                xhttp2.send();
+            }
+            setInterval(refresh,500)
+        </script>
+    </body>
+</html>

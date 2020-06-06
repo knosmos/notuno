@@ -1,0 +1,10 @@
+{{ team }}
+
+<h1>Players: </h1>
+{% for user in team['players'] %}
+    <strong>{{ user.id }}: </strong>{{ user.cards }}
+    <br>
+{% endfor %}
+<hr>
+<h1>Starting card</h1>
+{{ team['card'] }}
