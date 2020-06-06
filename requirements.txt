@@ -1,0 +1,8 @@
+Flask==1.1.1
+Flask-HTTPAuth==3.3.0
+future==0.17.1
+gunicorn==19.9.0
+itsdangerous==1.1.0
+jaraco.itertools==4.4.2
+Jinja2==2.10.3
+Werkzeug==0.16.0
