@@ -190,12 +190,12 @@
                     if(turn === groupUsers.indexOf(name)){
                         moveNum = 0;
                         for(let i of document.getElementsByClassName('handcard')){
-                            i.style.webkitFilter = 'grayscale(0%) drop-shadow(6px 6px 1px black)';
+                            i.style.webkitFilter = 'brightness(100%) drop-shadow(6px 6px 1px black)';
                         }
                     }
                     else{
                         for(let i of document.getElementsByClassName('handcard')){
-                            i.style.webkitFilter = 'grayscale(100%) drop-shadow(6px 6px 1px black)';
+                            i.style.webkitFilter = 'brightness(50%) drop-shadow(6px 6px 1px black)';
                         }
                     }
                 }
